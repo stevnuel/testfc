@@ -64,7 +64,7 @@ def analyze_image(image_path):
 
         # Hitung histogram manual
         hist_manual = calculate_histogram(face_roi)
-        print("Histogram Manual:", hist_manual[:10], "...")  # Cetak 10 nilai pertama saja
+        print("Histogram Manual:", hist_manual[:20], "...")  # Cetak 20 nilai pertama saja
 
         # Hitung histogram menggunakan OpenCV
         hist_cv = cv2.calcHist([face_roi], [0], None, [256], [0, 256])
