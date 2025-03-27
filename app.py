@@ -59,6 +59,9 @@ def analyze_image(image_path):
         (x, y, w, h) = faces[0]
         face_roi = gray[y:y+h, x:x+w]
 
+        # Normalisasi kontras (ditambahkan di sini)
+        face_roi = cv2.equalizeHist(face_roi)
+
         # Hitung histogram manual
         hist_manual = calculate_histogram(face_roi)
         print("Histogram Manual:", hist_manual[:10], "...")  # Cetak 10 nilai pertama saja
