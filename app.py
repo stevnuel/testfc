@@ -23,14 +23,28 @@ def calculate_histogram(image):
             hist[pixel] += 1
     return hist
 
+# Fungsi untuk menampilkan gambar utuh
+def display_full_image(image):
+    plt.figure(figsize=(10, 8))
+    plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    plt.title('Gambar dengan Wajah Terdeteksi')
+    plt.axis('off')
+    plt.show()
+
 # Fungsi untuk menampilkan histogram
-def show_histogram(hist):
+def show_histogram(hist, face_coords=None, original_image=None):
     plt.figure(figsize=(10, 5))
     plt.plot(hist, color='black')
     plt.title('Histogram Wajah')
     plt.xlabel('Intensitas Piksel')
     plt.ylabel('Frekuensi')
     plt.show()
+
+    # Setelah grafik ditutup, tampilkan gambar utuh dengan bounding box jika tersedia
+    if face_coords is not None and original_image is not None:
+        x, y, w, h = face_coords
+        image_with_box = cv2.rectangle(original_image.copy(), (x, y), (x+w, y+h), (0, 255, 0), 2)
+        display_full_image(image_with_box)
 
 # Fungsi untuk deteksi wajah dan analisis histogram
 def analyze_image(image_path):
@@ -54,9 +68,9 @@ def analyze_image(image_path):
         if len(faces) == 0:
             messagebox.showerror("Error", "Tidak ada wajah yang terdeteksi!")
             return
-
         # Ambil ROI wajah pertama
         (x, y, w, h) = faces[0]
+        face_coords = (x, y, w, h)  # Store face coordinates
         face_roi = gray[y:y+h, x:x+w]
 
         # Normalisasi kontras (ditambahkan di sini)
@@ -70,17 +84,18 @@ def analyze_image(image_path):
         hist_cv = cv2.calcHist([face_roi], [0], None, [256], [0, 256])
         hist_cv = [int(val[0]) for val in hist_cv]
 
-        # Tampilkan histogram
-        show_histogram(hist_manual)
-
-        # Tampilkan gambar wajah di GUI
-        face_image = cv2.cvtColor(image[y:y+h, x:x+w], cv2.COLOR_BGR2RGB)
-        face_image = Image.fromarray(face_image)
-        face_image = ImageTk.PhotoImage(face_image)
-        panel.config(image=face_image)
-        panel.image = face_image
+       # Tampilkan histogram
+        show_histogram(hist_manual, face_coords, image)  # Tambahkan baris ini
     except Exception as e:
         messagebox.showerror("Error", f"Terjadi kesalahan saat analisis gambar: {str(e)}")
+    
+    # Fungsi untuk menampilkan gambar utuh
+    def display_full_image(image):
+        plt.figure(figsize=(10, 8))
+        plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        plt.title('Gambar dengan Wajah Terdeteksi')
+        plt.axis('off')
+        plt.show()
 
 # Fungsi untuk Face ID (verifikasi wajah)
 def face_id():
